@@ -41,6 +41,12 @@ public class Cart {
         if (checkContents(username, temp) == null) {
             UserDB.removeFromCart(username, itemCode, quantity);
             ih.moveFromCart(itemCode, quantity);
+            HashMap<String, Double> codes = UserDB.getCodes(username);
+            for(Map.Entry<String,Double> set: codes.entrySet()){
+                if(checkContents(username, DiscountCodeDB.getRequirements(set.getKey())) != null) {
+                    UserDB.removeCode(username, set.getKey());
+                }
+            }
             return true;
         }
         return false;
@@ -58,24 +64,16 @@ public class Cart {
         //location is stored in the database, and it's ust a matter of
         //calculation tax before or after discount codes are applied.
         double taxRate = UserDB.getTaxRate(username);
-        HashMap<Character, Double> codes = UserDB.getCodes(username);
+        HashMap<String, Double> codes = UserDB.getCodes(username);
         if(taxAfterDiscountCode){
-            for (Map.Entry<Character, Double> set : codes.entrySet()) {
-                if(set.getKey() == 'M'){
-                    cost -= set.getValue() * cost;
-                } else if(set.getKey() == 'S'){
-                    cost -= set.getValue();
-                }
+            for (Map.Entry<String, Double> set : codes.entrySet()) {
+                 cost -= set.getValue() * cost;
             }
             cost *= taxRate;
         } else {
             cost *= taxRate;
-            for (Map.Entry<Character, Double> set : codes.entrySet()) {
-                if(set.getKey() == 'M'){
-                    cost *= set.getValue();
-                } else {
-                    cost -= set.getValue();
-                }
+            for (Map.Entry<String, Double> set : codes.entrySet()) {
+                cost *= set.getValue();
             }
         }
         return cost;

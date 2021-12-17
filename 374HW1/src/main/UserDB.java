@@ -1,16 +1,17 @@
 package main;
 
+import javax.lang.model.element.NestingKind;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class UserDB {
 
-    private static HashMap<Character, Double> codes;
+    private static HashMap<String, Double> codes;
     private static HashMap<Integer, Integer> cart;
 
     public UserDB() {
-        codes = new HashMap<Character, Double>();
+        codes = new HashMap<String, Double>();
         cart = new HashMap<Integer, Integer>();
     }
 
@@ -38,7 +39,7 @@ public class UserDB {
         return false;
     }
 
-    public static HashMap<Character, Double> getCodes(String username) {
+    public static HashMap<String, Double> getCodes(String username) {
         return codes;
     }
 
@@ -47,7 +48,11 @@ public class UserDB {
     }
 
     public static void addCode(String user, String code) {
-        codes.put('M', 0.05);
+        codes.put(code, 0.05);
+    }
+
+    public static void removeCode(String user, String code){
+        codes.remove(code);
     }
 
     public static int getAttempts(String user, int i) {
